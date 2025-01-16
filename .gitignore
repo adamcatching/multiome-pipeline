@@ -1,0 +1,38 @@
+# Ignore notebooks
+#############################
+notebook
+
+# Data that should not leave the cluster
+data/*.csv
+data/*.gtf
+data/*.xlsx
+data/old_data/*
+
+
+# Don't save the .snakemake logs
+.snakemake
+
+# No need to save old pipelines (this is version control)
+old_pipelines
+
+# Ignore old scripts and logs
+scripts/logs
+scripts/old_scripts
+
+# Plots should be ignored
+plots
+
+# Ignore the actual files inside input
+input/old_files
+input/*.csv
+
+# No need to show my mistakes (logs) to the world
+logs
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
