@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 
 # Define the data directory, explicitly
 data_dir = '/data/CARD_singlecell/Brain_atlas/SN_Multiome/'
@@ -12,8 +12,8 @@ num_workers = 8
 input_table = '/data/CARD_singlecell/SN_atlas/input/SN_PD_DLB_samples.csv'
 
 # Read in the list of 
-batches = pandas.read_csv(input_table)['Use_batch'].tolist()
-samples = pandas.read_csv(input_table)['Sample'].tolist()
+batches = pd.read_csv(input_table)['Use_batch'].tolist()
+samples = pd.read_csv(input_table)['Sample'].tolist()
 
 envs = {
     'singlecell': 'envs/single_cell_cpu.yml', 
