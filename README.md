@@ -18,6 +18,8 @@ Current version:
 
 ## Pipeline
 
+![screenshot](images/multiome_pipeline.png)
+
 Once set up, this complete pipeline can be run by simply typing '''bash snakemake.sh ''' in terminal in an HPC running Slurm. This is a work in progress and has not been tested on other devices. 
 
 ### RNA processing
