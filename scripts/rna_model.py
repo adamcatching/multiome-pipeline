@@ -59,16 +59,19 @@ elbo = model.history['elbo_train']
 elbo['elbo_validation'] = model.history['elbo_validation']
 elbo.to_csv(snakemake.output.model_history, index=False)
 
-# 
+# Convert the cell barcode to the observable matrix X_scvi which neighbors and UMAP can be calculated from
 adata.obs['atlas_identifier'] = adata.obs.index.to_list()
 adata.obsm['X_scvi'] = model.get_latent_representation()
 
+# Calculate nearest neighbors and the UMAP from the X_scvi observable matrix
 sc.pp.neighbors(adata, use_rep='X_scvi')
 sc.tl.umap(adata, min_dist=0.3)
+# Calculate the leiden distance from the nearest neighbors
 sc.tl.leiden(adata, resolution=2, key_added='leiden_2')
 sc.tl.leiden(adata, key_added='leiden')
 sc.tl.leiden(adata, resolution=.5, key_added='leiden_05')
 
+# Save the anndata object
 adata.write_h5ad(snakemake.output.merged_rna_anndata, compression='gzip')
 
 model.save(snakemake.params.model, overwrite=True)
