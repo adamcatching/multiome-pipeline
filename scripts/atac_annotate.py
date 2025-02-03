@@ -8,11 +8,13 @@ atac_anndata = snakemake.input.atac_anndata
 # Read in snapATAC2 datasets into a list of anndata objects in read only
 list_of_anndata = [(samples[i], snap.read(atac_anndata[i])) for i in range(len(atac_anndata))]
 
+# Create the AnnDataSet from the snapATAC2 datasets
 anndataset = snap.AnnDataSet(
     adatas=list_of_anndata,
     filename=temp_atac_anndata
 )
 
+#
 metadata_dict = {
     'batch' : 'Use_batch',
     'sex': 'Sex',
