@@ -14,6 +14,12 @@ input_table = '/data/CARD_singlecell/SN_atlas/input/SN_PD_DLB_samples.csv'
 # Read in the list of 
 batches = pd.read_csv(input_table)['Use_batch'].tolist()
 samples = pd.read_csv(input_table)['Sample'].tolist()
+# Define disease states
+control = 'control'
+diseases = ['PD', 'DLB']
+
+# Define the cell types to look for
+cell_types = ['Astro', 'DaN', 'ExN', 'EC', 'InN', 'MG', 'OPC', 'Oligo', 'PC', 'TC']
 
 envs = {
     'singlecell': 'envs/single_cell_cpu.yml', 
@@ -308,9 +314,80 @@ rule atac_model:
         runtime=2880, disk_mb=500000, mem_mb=300000, gpu=4
     script:
         'scripts/atac_model.py'
+rule atac_annotate:
+    input:
+        atac_anndata = expand(
+            data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_object_atac.h5ad', 
+            sample=samples,
+            batch=batches
+            ),
+        samples=samples,
+        umap_csv = work_dir + 'data/atac_umap.csv',
+        var_csv = work_dir + 'data/atac_var_selected.csv',
+        annot_csv = work_dir + 'data/rna_cell_annot.csv',
+        input_table=input_table
+    output:
+        temp_atac_anndata = work_dir + 'atlas/04_filtered_anndata_atac.h5ad',
+        merged_atac_anndata = data_dir + 'atlas/05_annotated_anndata_atac.h5ad'
+    conda:
+        envs['atac']
+    threads:
+        64
+    resources:
+        runtime=2880, disk_mb=500000, mem_mb=300000
+    script:
+        'scripts/atac_annotate.py'
+
+rule multiome_output:
+    input:
+        merged_atac_anndata = data_dir + 'atlas/05_annotated_anndata_atac.h5ad',
+        merged_rna_anndata = data_dir+'atlas/05_annotated_anndata_rna.h5ad'
+    output:
+        merged_multiome = data_dir + 'atlas/final_multiome_atlas.h5ad'
+    conda:
+        envs['muon']
+    script:
+        'scripts/merge_muon.py'
 
 """
-rule apply_atac_annotation:
+rule celltype_atlases:
+    input:
+        merged_atac_anndata = data_dir+'atlas/05_annotated_anndata_atac.h5ad'
+        merged_rna_anndata = data_dir+'atlas/05_annotated_anndata_rna.h5ad'
+    output:
+"""
+
 rule DGE:
-rule DA:
-# """
+    input:
+        rna_anndata = work_dir + 'atlas/05_annotated_anndata_rna.h5ad'
+    output:
+        output_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DAR.csv',
+        output_figure = work_dir + 'figures/{cell_type}/rna_{cell_type}_{disease}_DAR.png'
+    conda:
+        envs['muon']
+    threads:
+        64
+    resources:
+        runtime=1440, disk_mb=200000, mem_mb=200000
+    script:
+        'scripts/rna_DGE.py'
+
+
+rule DAR:
+    input:
+        atac_anndata = work_dir + 'data/celltypes/{cell_type}/atac.h5ad'
+    output:
+        output_data = work_dir + 'data/significant_genes/atac/atac_{cell_type}_{disease}_DAR.csv',
+        output_figure = work_dir + 'figures/{cell_type}/atac_{cell_type}_{disease}_DAR.png'
+    params:
+        control = control,
+        disease = lambda wildcards, output: output[0].split("_")[-2],
+        cell_type = lambda wildcards, output: output[0].split("_")[-3]
+    conda:
+        envs['atac']
+    threads:
+        64
+    resources:
+        runtime=1440, disk_mb=200000, mem_mb=200000
+    script:
+        'scripts/atac_DAR.py'
