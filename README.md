@@ -61,3 +61,126 @@ Using snapATAC2 for only read/write, both create a AnnDataSet object to run batc
 ### Merging to one multiome object
 _in progress_
 Both atlases are merged into a single muon AnnData object for portability.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# TESTING - FLOWCHART
+
+### OVERVIEW
+
+```mermaid
+flowchart TD
+    classDef input fill:#90CAF9,stroke:#1565C0,color:#000
+    classDef process fill:#A5D6A7,stroke:#2E7D32,color:#000
+    classDef merge fill:#FFE082,stroke:#FFA000,color:#000
+    classDef model fill:#EF9A9A,stroke:#C62828,color:#000
+    classDef final fill:#CE93D8,stroke:#6A1B9A,color:#000
+
+    Input[Input Data]:::input --> Preprocess[Preprocessing]:::process
+    Preprocess --> MergeUnfiltered[Merge Unfiltered]:::merge
+    MergeUnfiltered --> QCPlot[QC Plotting]:::process
+    QCPlot --> FilterRNA[Filter RNA]:::process
+    FilterRNA --> MergeFiltered[Merge Filtered]:::merge
+    MergeFiltered --> ATACPreprocess[ATAC Preprocessing]:::process
+    ATACPreprocess --> FilterATAC[Filter ATAC]:::process
+    FilterATAC --> MergeMultiome[Merge Multiome]:::merge
+    MergeMultiome --> Model[RNA Modeling]:::model
+    Model --> Annotate[Annotation]:::process
+    Annotate --> SCVI[SCANVI Annotation]:::model
+    SCVI --> FinalMerge[Final Merge]:::final
+```
+
+The colors in the diagram represent different types of operations:
+
+- Blue: Input data
+- Green: Processing steps
+- Yellow: Merging operations
+- Red: Machine learning/modeling steps
+- Purple: Final integration steps
+
+### DETAILED PROCESS FLOWS
+
+```mermaid
+flowchart TD
+    classDef input fill:#90CAF9,stroke:#1565C0,color:#000
+    classDef process fill:#A5D6A7,stroke:#2E7D32,color:#000
+    classDef merge fill:#FFE082,stroke:#FFA000,color:#000
+    classDef model fill:#EF9A9A,stroke:#C62828,color:#000
+    classDef final fill:#CE93D8,stroke:#6A1B9A,color:#000
+
+    subgraph RNA["RNA Analysis Pipeline"]
+        RawRNA[Raw RNA Data]:::input --> Preprocess[Preprocessing]:::process
+        Preprocess --> MergeUnfiltered[Merge Unfiltered]:::merge
+        MergeUnfiltered --> QCPlot[QC Plotting]:::process
+        QCPlot --> FilterRNA[Filter RNA]:::process
+        FilterRNA --> MergeFiltered[Merge Filtered]:::merge
+        MergeFiltered --> Model[RNA Modeling]:::model
+        Model --> Annotate[Annotation]:::process
+        Annotate --> SCVI[SCANVI Annotation]:::model
+    end
+    
+    subgraph ATAC["ATAC Analysis Pipeline"]
+        RawATAC[Raw ATAC Data]:::input --> ATACPreprocess[ATAC Preprocessing]:::process
+        ATACPreprocess --> FilterATAC[Filter ATAC]:::process
+        FilterATAC --> MergeATAC[Merge ATAC]:::merge
+        MergeATAC --> FinalMerge[Final Integration]:::final
+    end
+    
+    MergeFiltered --> FinalMerge
+    SCVI --> FinalMerge
+```
+
+### KEY RULE RELATIONSHIPS
+
+```mermaid
+flowchart TD
+    classDef rule fill:#90CAF9,stroke:#1565C0,color:#000
+    classDef env fill:#FFE082,stroke:#FFA000,color:#000
+    
+    subgraph Preprocess["Preprocessing"]
+        direction TB
+        P1[preprocess]:::rule
+        P2[merge_unfiltered]:::rule
+        E1["singlecell"]:::env
+        
+        P1 -->|"rna_anndata"| P2
+        P1 -.->|"conda env"| E1
+        P2 -.->|"conda env"| E1
+    end
+    
+    subgraph Filter["Filtering"]
+        direction TB
+        F1[filter_rna]:::rule
+        F2[merge_filtered_rna]:::rule
+        E2["singlecell"]:::env
+        
+        F1 -->|"rna_anndata"| F2
+        F1 -.->|"conda env"| E2
+        F2 -.->|"conda env"| E2
+    end
+    
+    subgraph Model["Modeling"]
+        direction TB
+        M1[rna_model]:::rule
+        M2[annotate]:::rule
+        M3[SCANVI_annot]:::rule
+        E3["single_cell_gpu"]:::env
+        E4["singlecell"]:::env
+        
+        M1 -->|"merged_rna_anndata"| M2
+        M2 -->|"merged_rna_anndata"| M3
+        M1 -.->|"conda env"| E3
+        M2 -.->|"conda env"| E4
+        M3 -.->|"conda env"| E3
+    end
+    
+    P2 -->|"merged_rna_anndata"| F1
+    F2 -->|"merged_rna_anndata"| M1
+```
+
+Let's examine the relationships between specific rules:
+
+- Solid lines show data flow between rules (e.g., rna_anndata flowing from preprocess to merge_unfiltered)
+- Dotted lines indicate which conda environment each rule uses
+- Each major processing stage (Preprocessing, Filtering, Modeling) forms a self-contained unit
+- Rules share environments when performing related operations (e.g., both filtering rules use the singlecell environment)
