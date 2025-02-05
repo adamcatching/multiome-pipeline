@@ -7,14 +7,14 @@
 #SBATCH --array=0-246
 
 """
-This takes all of the transferred Cellranger output files and runs cellbender
+This takes all of the transferred Cell Ranger output files and runs CellBender
 """
 
 # Load modules
 module load cellbender
 module load CUDA/12.1
 
-# Define the directories to run cell bender within
+# Define the directories to run CellBender within
 output_file_base=$(echo /data/CARD_singlecell/SN_atlas/cellbender/data/samples/*/)
 
 # Convert the locations of the directories to an array
