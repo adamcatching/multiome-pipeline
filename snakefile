@@ -16,7 +16,7 @@ work_dir = '/data/CARD_singlecell/SN_control_atlas/multiome-pipeline/'
 # Number of threads to use when running the rules
 num_workers = 8
 
-# # Define where the metadata data exists for each sample to be processed
+# Define where the metadata data exists for each sample to be processed
 input_table = '/data/CARD_singlecell/SN_control_atlas/input/SN_control_samples.csv'
 
 # Read in the list of 
@@ -25,10 +25,10 @@ samples = pandas.read_csv(input_table)['Sample'].tolist()
 
 # Define environmental .YML files as a dictionary
 envs = {
-    'singlecell'        : 'envs/single_cell_cpu.yml', 
-    'single_cell_gpu'   : 'envs/single_cell_gpu.yml', 
     'cellbender'        : 'envs/cellbender.yml', 
     # 'muon'              : 'envs/muon.yml',
+    'singlecell'        : 'envs/single_cell_cpu.yml', 
+    'single_cell_gpu'   : 'envs/single_cell_gpu.yml', 
     'atac'              : 'envs/snapATAC2.yml'
     }
 

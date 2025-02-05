@@ -24,6 +24,7 @@ plots
 # Ignore the actual files inside input
 input/old_files
 input/*.csv
+#? Q) Keep input folder? Ignore all files inside it?
 
 # No need to show my mistakes (logs) to the world
 logs
@@ -51,7 +52,7 @@ envs/*
 
 # EXCLUSIONS
 # Anything from the whole folders being ignored that should be included
+!envs/cellbender.yml
 !envs/single_cell_cpu.yml
 !envs/single_cell_gpu.yml
-!envs/cellbender.yml
 !envs/snapATAC2.yml
