@@ -43,16 +43,14 @@ slurm-*.out
 
 # Singularity Image Files
 *.sif 
-# envs/pytorch-gpu.sif
-# envs/*.sif
 
 # WHOLE FOLDERS TO IGNORE
-# * = ignore all files here (instead of entire directory, which will skip the exclusions)
+# * = ignore all files here (keeps an empty folder instead, which will skip the exclusions)
 input
 envs/*
 
 # EXCLUSIONS
-# Anything from the folders being ignored that should be included
+# Anything from the whole folders being ignored that should be included
 !envs/single_cell_cpu.yml
 !envs/single_cell_gpu.yml
 !envs/cellbender.yml
