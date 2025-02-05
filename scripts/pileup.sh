@@ -6,16 +6,17 @@
 #SBATCH --gres=lscratch:2000
 #SBATCH --output=/data/CARD_singlecell/SN_atlas/cellbender/logs/pileup-%a.out
 
+# Load modules
 module load samtools
 module load bcftools
 
 # Make a temporary location
-
 mkdir /lscratch/$SLURM_JOB_ID/%a
 export TMPDIR=/lscratch/$SLURM_JOB_ID
 
 # Define the directories to run cell bender within
 output_file_base=$(echo /data/CARD_singlecell/Brain_atlas/SN_Multiome/*/Multiome/*/outs/)
+
 # Convert the locations of the directories to an array
 out_dirs=(`echo ${output_file_base}`);
 
