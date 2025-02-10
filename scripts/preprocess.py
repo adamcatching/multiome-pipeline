@@ -31,27 +31,35 @@ adata.var['mt'] = adata.var_names.str.startswith('MT-')
 adata.var['rb'] = adata.var_names.str.startswith(('RPL', 'RPS'))
 
 # Calculate QC metrics
-sc.pp.calculate_qc_metrics(adata, qc_vars=['rb', 'mt'], percent_top=None, log1p=False, inplace=True)
+sc.pp.calculate_qc_metrics(
+    adata, 
+    qc_vars = ['rb', 'mt'], 
+    percent_top = None, 
+    log1p = False, 
+    inplace = True
+    )
 
 # Run scrublet to identify doublets
-sc.external.pp.scrublet(adata, expected_doublet_rate=(adata.n_obs / 1000) * 0.008)
+sc.external.pp.scrublet(
+    adata, 
+    expected_doublet_rate = (adata.n_obs / 1000) * 0.008)
 adata.obs.drop('predicted_doublet', axis=1, inplace=True)
 adata.obs['cell_barcode'] = adata.obs_names
 
 # Add metadata to the AnnData object directly from the metadata dataframe
 metadata_dict = {
-    'batch': metadata['Use_batch'],
-    'sex': metadata['Sex'],
-    'age': metadata['Age'],
-    'pmi': metadata['PMI'],
-    'ethnicity': metadata['Ethnicity'],
-    'race': metadata['Race'],
-    'brain_bank': metadata['Brain_bank'],
-    'homogenization': metadata['Homogenizing_batch'],
-    'library': metadata['Library_batch'],
-    'seq': metadata['Sequencing_batch'],
-    'sample': metadata['Sample_ID'],
-    'short diagnosis': metadata['Short Diagnosis']
+    'batch'             : metadata['Use_batch'],
+    'sex'               : metadata['Sex'],
+    'age'               : metadata['Age'],
+    'pmi'               : metadata['PMI'],
+    'ethnicity'         : metadata['Ethnicity'],
+    'race'              : metadata['Race'],
+    'brain_bank'        : metadata['Brain_bank'],
+    'homogenization'    : metadata['Homogenizing_batch'],
+    'library'           : metadata['Library_batch'],
+    'seq'               : metadata['Sequencing_batch'],
+    'sample'            : metadata['Sample_ID'],
+    'short diagnosis'   : metadata['Short Diagnosis']
 }
 
 for key, value in metadata_dict.items():
@@ -61,20 +69,23 @@ for key, value in metadata_dict.items():
 sc.pp.normalize_total(adata)
 
 # Save the CPM data
-adata.layers['cpm']=adata.X.copy() 
+adata.layers['cpm'] = adata.X.copy() 
 
 # Logarithmize the data
 sc.pp.log1p(adata)
 
 # Save the normalized-log data
-adata.layers['data']=adata.X.copy() 
+adata.layers['data'] = adata.X.copy() 
 
 # Calculate cell cycle()
 cell_cycle_genes = [x.strip() for x in open('/data/CARD_singlecell/SN_atlas/input/lab_cell_cycle_genes.txt')]
 s_genes = cell_cycle_genes[:43]
 g2m_genes = cell_cycle_genes[43:]
 try:
-    sc.tl.score_genes_cell_cycle(adata, s_genes=s_genes, g2m_genes=g2m_genes)
+    sc.tl.score_genes_cell_cycle(
+        adata, 
+        s_genes=s_genes, 
+        g2m_genes=g2m_genes)
 except:
     print("can't map genes")
 
@@ -85,5 +96,7 @@ sc.pp.neighbors(adata)
 sc.tl.umap(adata)
 
 # Save the AnnData object
-adata.write(filename=snakemake.output.rna_anndata, compression='gzip')
+adata.write(
+    filename = snakemake.output.rna_anndata, 
+    compression = 'gzip')
 
