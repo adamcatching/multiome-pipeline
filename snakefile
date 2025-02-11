@@ -54,7 +54,7 @@ rule all:
             batch = batches,
             sample = samples
             )
-
+            
 """
 # NOTE - only needs to run once at the beginning
 

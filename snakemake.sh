@@ -16,7 +16,7 @@ module load snakemake/7.7.0
 snakemake \
     --cores all \
     --profile profile/snakemake_profile \
-    --use-conda -f annotate #--unlock
+    --use-conda -f merge_unfiltered #annotate #--unlock
 
 #! WARNING - if the slurm-*.txt files say that there is a locked file error, then:
 # - uncomment the --unlock flag above
