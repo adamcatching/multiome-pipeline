@@ -18,7 +18,7 @@ snakemake \
     --profile profile/snakemake_profile \
     --use-conda -f plot_qc_rna #annotate #--unlock
 
-#! WARNING - if the slurm-*.txt files say that there is a locked file error, then:
+#! WARNING - if there is a `locked file` error, then:
 # - uncomment the --unlock flag above
 # - run this script once
 # - it will just unlock the files
