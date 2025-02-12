@@ -5,6 +5,11 @@ import seaborn as sns
 import scanpy as sc
 import numpy as np
 
+# Define a function to check for existing dir's and create them if missing
+def my_makedirs(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
+        
 # Keep consistent font sizes
 
 SMALL_SIZE = 6
@@ -30,12 +35,16 @@ adata = sc.read_h5ad(snakemake.input.merged_rna_anndata)
 
 for sample in adata.obs['sample'].drop_duplicates().to_list():
 
-    # Make plot directory
-    try:
-        os.mkdir(f'plots/{sample}')
-    except FileExistsError:
-        print('Already there')
-
+    # # Make plot directory
+    # try:
+    #     os.mkdir(f'plots/{sample}')
+    # except FileExistsError:
+    #     print('Already there')
+    # TEST 
+    # Define path per sample
+    new_dir_path_recursive = os.path.join(f'plots/{sample}')
+    # Call function to check for or create that path
+    my_makedirs(new_dir_path_recursive)
 
     """Plot percent mitochondria"""
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), sharey=False)
@@ -136,7 +145,12 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
     # Violin plot in the first panel
-    sc.pl.violin(adata[adata.obs['sample'] == sample], ['doublet_score'], jitter=0.5, ax=ax[0], show=False)
+    sc.pl.violin(
+        adata[adata.obs['sample'] == sample], 
+        ['doublet_score'], 
+        jitter = 0.5, 
+        ax = ax[0], 
+        show = False)
     ax[0].plot([-.5, .5], [0.25, 0.25], '--r')
     ax[0].set_ylabel('droplet score')
     ax[0].set_xlim(-.75, .75)
@@ -146,7 +160,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     
     y, x, _ = ax[1].hist(
         adata[adata.obs['sample'] == sample].obs['doublet_score'], 
-        bins=int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
+        bins = int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
         )
     ax[1].plot([0.25, 0.25], [1, y.max()], '--r')
     ax[1].plot([0.25, 0.25], [1, y.max()], '--r')
