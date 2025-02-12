@@ -99,4 +99,3 @@ sc.tl.umap(adata)
 adata.write(
     filename = snakemake.output.rna_anndata, 
     compression = 'gzip')
-
