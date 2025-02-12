@@ -37,13 +37,18 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
         print('Already there')
 
 
-    """Plot percent mitochondria 
-    """
+    """Plot percent mitochondria"""
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), sharey=False)
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
     # Violin plot in the first panel
-    sc.pl.violin(adata[adata.obs['sample'] == sample], ['pct_counts_mt'], jitter=0.5, ax=ax[0], show=False)
+    sc.pl.violin(
+        adata[adata.obs['sample'] == sample],
+        ['pct_counts_mt'], 
+        jitter = 0.5, 
+        ax = ax[0], 
+        show = False
+        )
     ax[0].set_ylabel('percent')
     ax[0].set_xticks('')
     ax[0].set_xlim(-.75, .75)
@@ -53,7 +58,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     # Histogram of values in the second panel
     y, x, _ = ax[1].hist(
         adata[adata.obs['sample'] == sample].obs['pct_counts_mt'], 
-        bins=int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
+        bins = int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
         )
     ax[1].set_yscale("log")
     ax[1].set_xlabel('percent')
@@ -69,7 +74,13 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
     # Violin plot in the first panel
-    sc.pl.violin(adata[adata.obs['sample'] == sample], ['pct_counts_rb'], jitter=0.5, ax=ax[0], show=False)
+    sc.pl.violin(
+        adata[adata.obs['sample'] == sample], 
+        ['pct_counts_rb'], 
+        jitter = 0.5, 
+        ax = ax[0], 
+        show = False
+        )
     ax[0].set_ylabel('percent')
     ax[0].set_xlim(-.75, .75)
     ax[0].plot([-.5, .5], [15, 15], '--r')
@@ -94,7 +105,13 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
     # Violin plot in the first panel
-    sc.pl.violin(adata[adata.obs['sample'] == sample], ['n_genes_by_counts'], jitter=0.5, ax=ax[0], show=False)
+    sc.pl.violin(
+        adata[adata.obs['sample'] == sample], 
+        ['n_genes_by_counts'], 
+        jitter = 0.5, 
+        ax = ax[0], 
+        show = False
+        )
     ax[0].plot([-.5, .5], [500, 500], '--r')
     ax[0].set_ylabel('total counts')
     ax[0].set_xlim(-.75, .75)
@@ -139,22 +156,27 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     ax[1].set_title('Doublet score per cell')
     plt.savefig(f'plots/{sample}/scrublet_score_per_cell.png', dpi=300)
 
+    """Plot scatter plot"""
     sc.pl.scatter(
         adata[adata.obs['sample'] == sample], 
         "total_counts", 
         "n_genes_by_counts", 
-        color="pct_counts_mt",
-        show=False
+        color = "pct_counts_mt",
+        show = False
         )
     plt.savefig(f'plots/{sample}/num_gene_counts_total.png', dpi=300)
 
     # Plot UMAP of values
     sc.pl.umap(
         adata[adata.obs['sample'] == sample],
-        color=['pct_counts_mt', 'pct_counts_rb', 'doublet_score', 'total_counts', 'n_genes_by_counts'],
-        size=2,
-        ncols=3,
-        cmap='viridis',
-        show=False
-    )
+        color = ['pct_counts_mt',
+                 'pct_counts_rb', 
+                 'doublet_score', 
+                 'total_counts', 
+                 'n_genes_by_counts'],
+        size = 2,
+        ncols = 3,
+        cmap = 'viridis',
+        show = False
+        )
     plt.savefig(f'plots/{sample}/qc_umap.png', dpi=300)
