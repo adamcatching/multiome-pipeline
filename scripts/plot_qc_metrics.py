@@ -1,3 +1,4 @@
+# IMPORTS
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,9 +10,9 @@ import numpy as np
 def my_makedirs(path):
     if not os.path.isdir(path):
         os.makedirs(path)
-        
+   
+# DEFAULTS - shared across plots     
 # Keep consistent font sizes
-
 SMALL_SIZE = 6
 MEDIUM_SIZE = 8
 BIGGER_SIZE = 10
@@ -30,9 +31,10 @@ cm = 1/2.54
 # Set figure context
 sns.set_context('paper')
 
-# Save the AnnData object
+# LOAD - the AnnData object
 adata = sc.read_h5ad(snakemake.input.merged_rna_anndata) 
 
+# Loop thru each sample and plot
 for sample in adata.obs['sample'].drop_duplicates().to_list():
 
     # # Make plot directory
@@ -40,6 +42,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     #     os.mkdir(f'plots/{sample}')
     # except FileExistsError:
     #     print('Already there')
+    
     # TEST 
     # Define path per sample
     new_dir_path_recursive = os.path.join(f'plots/{sample}')
@@ -50,7 +53,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), sharey=False)
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
-    # Violin plot in the first panel
+    # 1st panel: Violin plot
     sc.pl.violin(
         adata[adata.obs['sample'] == sample],
         ['pct_counts_mt'], 
@@ -64,7 +67,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     ax[0].plot([-.5, .5], [20, 20], '--r')
     ax[0].set_title('Percent mitochondria per cell')
 
-    # Histogram of values in the second panel
+    # 2nd panel: Histogram of values
     y, x, _ = ax[1].hist(
         adata[adata.obs['sample'] == sample].obs['pct_counts_mt'], 
         bins = int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
@@ -82,7 +85,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     fig, ax = plt.subplots(1, 2, figsize=(10, 4))
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
-    # Violin plot in the first panel
+    # 1st panel: Violin plot
     sc.pl.violin(
         adata[adata.obs['sample'] == sample], 
         ['pct_counts_rb'], 
@@ -95,7 +98,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     ax[0].plot([-.5, .5], [15, 15], '--r')
     ax[0].set_title('Percent ribosome genes per cell')
 
-    # Histogram of values in the second panel
+    # 2nd panel: Histogram of values
     y, x, _ = ax[1].hist(
         adata[adata.obs['sample'] == sample].obs['pct_counts_rb'], 
         bins=int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
@@ -113,7 +116,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     fig, ax = plt.subplots(1, 2, figsize=(10, 4))
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
-    # Violin plot in the first panel
+    # 1st panel: Violin plot
     sc.pl.violin(
         adata[adata.obs['sample'] == sample], 
         ['n_genes_by_counts'], 
@@ -127,7 +130,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     ax[0].plot([-.5, .5], [500, 500], '--r')
     ax[0].set_title('Number of genes per cell')
 
-    # Histogram of values in the second panel
+    # 2nd panel: Histogram of values
     y, x, _ = ax[1].hist(
         adata[adata.obs['sample'] == sample].obs['n_genes_by_counts'], 
         bins=int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
@@ -144,7 +147,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     fig, ax = plt.subplots(1, 2, figsize=(10, 4))
     fig.suptitle(f' Sample {sample} ', fontsize=BIGGER_SIZE)
 
-    # Violin plot in the first panel
+    # 1st panel: Violin plot
     sc.pl.violin(
         adata[adata.obs['sample'] == sample], 
         ['doublet_score'], 
@@ -157,7 +160,7 @@ for sample in adata.obs['sample'].drop_duplicates().to_list():
     ax[0].plot([-.5, .5], [0.25, 0.25], '--r')
     ax[0].set_title('Doublet score per cell')
 
-    
+    # 2nd panel: Histogram of values
     y, x, _ = ax[1].hist(
         adata[adata.obs['sample'] == sample].obs['doublet_score'], 
         bins = int(np.sqrt(adata[adata.obs['sample'] == sample].n_obs))
