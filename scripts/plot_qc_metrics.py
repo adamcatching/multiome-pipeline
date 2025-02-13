@@ -34,7 +34,7 @@ sns.set_context('paper')
 # LOAD - the AnnData object
 adata = sc.read_h5ad(snakemake.input.merged_rna_anndata) 
 
-# Loop thru each sample and plot
+# Loop thru each sample: create it's own folder and make plots
 for sample in adata.obs['sample'].drop_duplicates().to_list():
 
     # # Make plot directory
