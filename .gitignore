@@ -18,8 +18,8 @@ old_pipelines
 scripts/logs
 scripts/old_scripts
 
-# Plots should be ignored
-plots
+# Plots should be ignored -- but the * will keep the folder there
+plots/*
 
 # Ignore the actual files inside input
 input/old_files
