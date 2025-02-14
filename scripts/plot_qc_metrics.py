@@ -8,11 +8,15 @@ import numpy as np
 
 # Define a function to check for existing dir's and create them if missing
 def my_makedirs(path):
+    """
+    Provide a parent directory to check and create
+    """
+    # If-else logic to check if they exist, if not, create the directory
     if not os.path.isdir(path):
         os.makedirs(path)
-        print('Created:', path)
+        print(f"Created: {path}")
     else:
-        print(path, 'already there')
+        print(f"{path} folder is already there")
    
 # DEFAULTS - shared across plots     
 # Keep consistent font sizes
