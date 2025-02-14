@@ -41,6 +41,7 @@ logs
 
 # FILES TO IGNORE
 slurm-*.out
+*.h5ad
 
 # Singularity Image Files
 *.sif 
