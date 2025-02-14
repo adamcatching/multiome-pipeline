@@ -10,8 +10,9 @@ import numpy as np
 def my_makedirs(path):
     if not os.path.isdir(path):
         os.makedirs(path)
+        print('Created:', path)
     else:
-        print('Already there')
+        print(path, 'already there')
    
 # DEFAULTS - shared across plots     
 # Keep consistent font sizes
