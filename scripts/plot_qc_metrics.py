@@ -10,6 +10,8 @@ import numpy as np
 def my_makedirs(path):
     if not os.path.isdir(path):
         os.makedirs(path)
+    else:
+        print('Already there')
    
 # DEFAULTS - shared across plots     
 # Keep consistent font sizes
@@ -37,13 +39,7 @@ adata = sc.read_h5ad(snakemake.input.merged_rna_anndata)
 # Loop thru each sample: create it's own folder and make plots
 for sample in adata.obs['sample'].drop_duplicates().to_list():
 
-    # # Make plot directory
-    # try:
-    #     os.mkdir(f'plots/{sample}')
-    # except FileExistsError:
-    #     print('Already there')
-    
-    # TEST 
+    # Make plot directory    
     # Define path per sample
     new_dir_path_recursive = os.path.join(f'plots/{sample}')
     # Call function to check for or create that path
