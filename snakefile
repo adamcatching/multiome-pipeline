@@ -22,11 +22,9 @@ diseases = ['PD', 'DLB']
 cell_types = ['Astro', 'DaN', 'ExN', 'EC', 'InN', 'MG', 'OPC', 'Oligo', 'PC', 'TC']
 
 envs = {
-    'singlecell': 'envs/single_cell_cpu.yml', 
-    'single_cell_gpu': 'envs/single_cell_gpu.yml', 
-    'cellbender': 'envs/cellbender.yml', 
-    'muon': 'envs/muon.yml',
-    'atac': 'envs/snapATAC2.yml'
+    'singlecell': 'envs/single_cell_cpu.sif', 
+    'single_cell_gpu': 'envs/single_cell_gpu.yml',
+    'atac': 'envs/snapATAC2.sif'
     }
 
 # Define RNA thresholds
@@ -345,7 +343,7 @@ rule multiome_output:
     output:
         merged_multiome = data_dir + 'atlas/final_multiome_atlas.h5ad'
     conda:
-        envs['muon']
+        envs['singlecell']
     script:
         'scripts/merge_muon.py'
 
@@ -364,7 +362,7 @@ rule DGE:
         output_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DAR.csv',
         output_figure = work_dir + 'figures/{cell_type}/rna_{cell_type}_{disease}_DAR.png'
     conda:
-        envs['muon']
+        envs['singlecell']
     threads:
         64
     resources:
