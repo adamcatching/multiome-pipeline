@@ -21,9 +21,10 @@ diseases = ['PD', 'DLB']
 # Define the cell types to look for
 cell_types = ['Astro', 'DaN', 'ExN', 'EC', 'InN', 'MG', 'OPC', 'Oligo', 'PC', 'TC']
 
+
+#
 envs = {
     'singlecell': 'envs/single_cell_cpu.sif', 
-    'single_cell_gpu': 'envs/single_cell_gpu.yml',
     'atac': 'envs/snapATAC2.sif'
     }
 
@@ -50,10 +51,6 @@ rule all:
 rule cellbender:
     script:
         work_dir+'scripts/cellbender_array.sh'
-
-rule pileup:
-    script:
-        'scripts/pileup.sh'
 """   
 # ADDING GVCF, QTL, work here
 
@@ -63,7 +60,7 @@ rule preprocess:
         rna_anndata = data_dir+'batch{batch}/Multiome/{dataset}-ARC/outs/cellbender_gex_counts_filtered.h5'
     output:
         rna_anndata = data_dir+'batch{batch}/Multiome/{dataset}-ARC/outs/01_{dataset}_anndata_object_rna.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     params:
         sample='{dataset}'
@@ -82,7 +79,7 @@ rule merge_unfiltered:
             )
     output:
         merged_rna_anndata = data_dir+'atlas/01_merged_anndata_rna.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     params:
         samples=samples
@@ -94,7 +91,7 @@ rule merge_unfiltered:
 rule plot_qc_rna:
     input:
         merged_rna_anndata = data_dir+'atlas/01_merged_anndata_rna.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     resources:
         runtime=960, mem_mb=500000, disk_mb=10000, slurm_partition='largemem' 
@@ -106,7 +103,7 @@ rule filter_rna:
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/01_{sample}_anndata_object_rna.h5ad'
     output:
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/02_{sample}_anndata_filtered_rna.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     params:
         mito_percent_thresh = mito_percent_thresh,
@@ -128,7 +125,7 @@ rule merge_filtered_rna:
             )
     output:
         merged_rna_anndata = data_dir+'atlas/02_filtered_anndata_rna.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     params:
         samples=samples
@@ -142,7 +139,7 @@ rule atac_preprocess:
         fragment_file=data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/atac_fragments.tsv.gz'
     output:
         atac_anndata=data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/01_{sample}_anndata_object_atac.h5ad'
-    conda:
+    singularity:
         envs['atac']
     resources:
         runtime=120, mem_mb=50000, disk_mb=10000, slurm_partition='quick' 
@@ -159,7 +156,7 @@ rule atac_preprocess:
             )
     output:
         merged_atac_anndata=work_dir+'data/atlas/01_merged_anndata_atac.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     resources:
         runtime=480, mem_mb=1500000, disk_mb=10000, slurm_partition='largemem' 
@@ -169,7 +166,7 @@ rule atac_preprocess:
 rule plot_qc_atac:
     input:
         atac_anndata=data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/01_{sample}_anndata_object_rna.h5ad'
-    conda:
+    singularity:
         envs['atac']
     resources:
         runtime=240, mem_mb=1500000, disk_mb=10000, slurm_partition='largemem'
@@ -183,7 +180,7 @@ rule filter_atac:
     output:
         atac_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_object_atac.h5ad',
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_filtered_rna.h5ad'
-    conda:
+    singularity:
         envs['atac']
     resources:
         runtime=30, mem_mb=50000, slurm_partition='quick'
@@ -201,7 +198,7 @@ rule merge_multiome_rna:
             )
     output:
         merged_rna_anndata = data_dir+'atlas/03_filtered_anndata_rna.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     params:
         samples=samples
@@ -217,7 +214,7 @@ rule merge_multiome_rna:
     output:
         merged_rna_anndata = work_dir+'data/atlas/03_filtered_anndata_rna.h5ad',
         merged_atac_anndata = work_dir+'data/atlas/03_filtered_anndata_atac.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     resources:
         runtime=2880, mem_mb=3000000, slurm_partition='largemem'
@@ -232,7 +229,7 @@ rule rna_model:
         model_history = work_dir+'model_elbo/rna_model_history.csv'
     params:
         model = work_dir+'data/models/rna/'
-    conda:
+    singularity:
         envs['single_cell_gpu']
     threads:
         64
@@ -247,7 +244,7 @@ rule annotate:
     output:
         merged_rna_anndata = data_dir+'atlas/05_annotated_anndata_rna.h5ad',
         cell_annotate = work_dir+'data/rna_cell_annot.csv'
-    conda:
+    singularity:
         envs['singlecell']
     resources:
         runtime=240, mem_mb=500000, slurm_partition='largemem'
@@ -261,12 +258,12 @@ rule SCANVI_annot:
     output:
         merged_rna_anndata = data_dir+'atlas/06_SCVI_anndata_rna.h5ad',
         model_history = work_dir+'model_elbo/SCANVI_model_history.csv'
-    conda:
-        envs['single_cell_gpu']
+    singularity:
+        envs['singlecell'] # GPU environment needs work: envs['single_cell_gpu']
     threads:
         64
     resources:
-        runtime=2880, disk_mb=500000, mem_mb=300000, gpu=2, gpu_model='v100x'
+        runtime=2880, disk_mb=500000, mem_mb=300000#, gpu=2, gpu_model='v100x'
     script:
         'scripts/SCANVI_annot.py'
 
@@ -284,7 +281,7 @@ rule merge_multiome_atac:
         umap_data = data_dir+'data/atac_umap.csv',
         var_data = data_dir+'data/atac_var_selected.csv',
         merged_atac_anndata = data_dir+'atlas/03_filtered_anndata_atac.h5ad'
-    conda:
+    singularity:
         envs['atac']
     resources:
         runtime=2880, mem_mb=3000000, slurm_partition='largemem'
@@ -304,7 +301,7 @@ rule atac_model:
         atac_umap = work_dir+'data/atac_umap.csv',
         atac_var = work_dir+'data/atac_var_selected.csv',
         
-    conda:
+    singularity:
         envs['atac']
     threads:
         64
@@ -327,7 +324,7 @@ rule atac_annotate:
     output:
         temp_atac_anndata = work_dir + 'atlas/04_filtered_anndata_atac.h5ad',
         merged_atac_anndata = data_dir + 'atlas/05_annotated_anndata_atac.h5ad'
-    conda:
+    singularity:
         envs['atac']
     threads:
         64
@@ -342,7 +339,7 @@ rule multiome_output:
         merged_rna_anndata = data_dir+'atlas/05_annotated_anndata_rna.h5ad'
     output:
         merged_multiome = data_dir + 'atlas/final_multiome_atlas.h5ad'
-    conda:
+    singularity:
         envs['singlecell']
     script:
         'scripts/merge_muon.py'
@@ -361,7 +358,7 @@ rule DGE:
     output:
         output_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DAR.csv',
         output_figure = work_dir + 'figures/{cell_type}/rna_{cell_type}_{disease}_DAR.png'
-    conda:
+    singularity:
         envs['singlecell']
     threads:
         64
@@ -381,7 +378,7 @@ rule DAR:
         control = control,
         disease = lambda wildcards, output: output[0].split("_")[-2],
         cell_type = lambda wildcards, output: output[0].split("_")[-3]
-    conda:
+    singularity:
         envs['atac']
     threads:
         64
