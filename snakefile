@@ -46,13 +46,21 @@ rule all:
             sample=samples
             ),
         atac_anndata = expand(
-            data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_object_atac.h5ad', 
+            data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_object_atac.h5ad',
+            zip,
             sample=samples,
             batch=batches
             ),
         merged_multiome = data_dir + 'atlas/final_multiome_atlas.h5ad',
-        output_DGE_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DGE.csv',
-        output_DAR_data = work_dir + 'data/significant_genes/atac/atac_{cell_type}_{disease}_DAR.csv'
+        output_DGE_data = expand(
+            work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DGE.csv',
+            cell_type = cell_types,
+            disease = diseases
+            ),
+        output_DAR_data = expand(work_dir + 'data/significant_genes/atac/atac_{cell_type}_{disease}_DAR.csv',
+            cell_type = cell_types,
+            disease = diseases
+            )
         
 """
 rule cellbender:
@@ -361,7 +369,7 @@ rule celltype_atlases:
 
 rule DGE:
     input:
-        rna_anndata = work_dir + 'atlas/05_annotated_anndata_rna.h5ad'
+        rna_anndata = data_dir + 'atlas/05_annotated_anndata_rna.h5ad'
     output:
         output_DGE_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DGE.csv',
         output_figure = work_dir + 'figures/{cell_type}/rna_{cell_type}_{disease}_DAR.png'
@@ -377,7 +385,7 @@ rule DGE:
 
 rule DAR:
     input:
-        atac_anndata = work_dir + 'data/celltypes/{cell_type}/atac.h5ad'
+        atac_anndata = data_dir + 'data/celltypes/{cell_type}/atac.h5ad'
     output:
         output_DAR_data = work_dir + 'data/significant_genes/atac/atac_{cell_type}_{disease}_DAR.csv',
         output_figure = work_dir + 'figures/{cell_type}/atac_{cell_type}_{disease}_DAR.png'

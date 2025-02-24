@@ -28,4 +28,4 @@ module load snakemake/7.7.0
 apptainer pull envs/snapATAC2.sif oras://quay.io/adamcatchingdti/snapatac2
 apptainer pull envs/single_cell_cpu.sif oras://quay.io/adamcatchingdti/single_cell_cpu
 
-snakemake --cores all --profile profile/snakemake_profile --use-conda -n
+snakemake --cores all --profile profile/snakemake_profile -n
