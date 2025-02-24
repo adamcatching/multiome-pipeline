@@ -1,5 +1,7 @@
 # multiome-pipeline
 
+## THIS HAS BEEN MIGRATED TO https://github.com/NIH-CARD/multiome-pipeline
+
 ## Single-Nuclei Multiome Atlas Pipeline
 
 This pipeline is built off of the Substantia Nigra single-nuclei atlas pipeline here (https://github.com/adamcatching/SN_atlas) and is being updated to be more interchangable between projects. Starting off the scripts and Snakemake pipeline work for the Substantia Nigra dataset.
