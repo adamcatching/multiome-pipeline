@@ -95,7 +95,7 @@ rule plot_qc_rna:
     input:
         merged_rna_anndata = data_dir+'atlas/01_merged_anndata_rna.h5ad'
     conda:
-        envs['muon']
+        envs['singlecell']
     resources:
         runtime=960, mem_mb=500000, disk_mb=10000, slurm_partition='largemem' 
     script:
@@ -107,7 +107,7 @@ rule filter_rna:
     output:
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/02_{sample}_anndata_filtered_rna.h5ad'
     conda:
-        envs['muon']
+        envs['singlecell']
     params:
         mito_percent_thresh = mito_percent_thresh,
         doublet_thresh = doublet_thresh,
