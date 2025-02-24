@@ -21,8 +21,7 @@ diseases = ['PD', 'DLB']
 # Define the cell types to look for
 cell_types = ['Astro', 'DaN', 'ExN', 'EC', 'InN', 'MG', 'OPC', 'Oligo', 'PC', 'TC']
 
-
-#
+# Singularity containers to be downloaded from Quay.io
 envs = {
     'singlecell': 'envs/single_cell_cpu.sif', 
     'atac': 'envs/snapATAC2.sif'
@@ -45,8 +44,16 @@ rule all:
             zip,
             batch=batches,
             sample=samples
-            )
-
+            ),
+        atac_anndata = expand(
+            data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_object_atac.h5ad', 
+            sample=samples,
+            batch=batches
+            ),
+        merged_multiome = data_dir + 'atlas/final_multiome_atlas.h5ad',
+        output_DGE_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DGE.csv',
+        output_DAR_data = work_dir + 'data/significant_genes/atac/atac_{cell_type}_{disease}_DAR.csv'
+        
 """
 rule cellbender:
     script:
@@ -230,11 +237,11 @@ rule rna_model:
     params:
         model = work_dir+'data/models/rna/'
     singularity:
-        envs['single_cell_gpu']
+        envs['singlecell'] # GPU environment needs work: envs['single_cell_gpu']
     threads:
         64
-    resources:  
-        runtime=2880, disk_mb=500000, mem_mb=300000, gpu=2, gpu_model='v100x'
+    resources:
+        runtime=2880, disk_mb=500000, mem_mb=300000#, gpu=2, gpu_model='v100x'
     script:
         'scripts/rna_model.py'
 
@@ -356,7 +363,7 @@ rule DGE:
     input:
         rna_anndata = work_dir + 'atlas/05_annotated_anndata_rna.h5ad'
     output:
-        output_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DAR.csv',
+        output_DGE_data = work_dir + 'data/significant_genes/rna/rna_{cell_type}_{disease}_DGE.csv',
         output_figure = work_dir + 'figures/{cell_type}/rna_{cell_type}_{disease}_DAR.png'
     singularity:
         envs['singlecell']
@@ -372,7 +379,7 @@ rule DAR:
     input:
         atac_anndata = work_dir + 'data/celltypes/{cell_type}/atac.h5ad'
     output:
-        output_data = work_dir + 'data/significant_genes/atac/atac_{cell_type}_{disease}_DAR.csv',
+        output_DAR_data = work_dir + 'data/significant_genes/atac/atac_{cell_type}_{disease}_DAR.csv',
         output_figure = work_dir + 'figures/{cell_type}/atac_{cell_type}_{disease}_DAR.png'
     params:
         control = control,
