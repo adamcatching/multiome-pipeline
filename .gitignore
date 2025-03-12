@@ -51,6 +51,7 @@ slurm-*.out
 input
 envs/*
 src/output
+figures
 
 # EXCLUSIONS
 # Anything from the whole folders being ignored that should be included
