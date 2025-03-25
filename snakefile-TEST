@@ -1,0 +1,57 @@
+# IMPORTS
+from datetime import datetime
+
+# DEFINE VARIABLES
+# Define the working directory, explictly
+work_dir = '/data/CARD_singlecell/SN_control_atlas/multiome-pipeline/'
+
+# Number of threads to use when running the rules
+num_workers = 8
+
+# Define environmental .YML files as a dictionary
+envs = {
+    'singlecell'        : 'envs/single_cell_cpu.yml', 
+    'single_cell_gpu'   : 'envs/single_cell_gpu.yml', 
+    }
+
+# Define RNA thresholds
+mito_percent_thresh = 15
+ribo_percent_thresh = 10
+doublet_thresh      = 0.15
+min_genes_per_cell  = 250
+
+# Define ATAC thresholds
+min_peak_counts         = 500
+min_num_cell_by_counts  = 10
+
+# TEST
+# Get current date and time
+current_time = datetime.now()
+# Format the date and time
+formatted_time = current_time.strftime("%Y-%m-%d_%H:%M:%S")
+print('formatted_time =', formatted_time)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# SNAKEMAKE RULES
+            
+# rule my_params:
+rule all: 
+    input:
+        work_dir = work_dir
+    output:
+    threads:
+        8
+    conda:
+        envs['singlecell']
+    resources:
+        runtime=120, mem_mb=1000, disk_mb=1000, slurm_partition='quick' 
+    params:
+        mito_percent_thresh     = mito_percent_thresh,
+        doublet_thresh          = doublet_thresh,
+        min_genes_per_cell      = min_genes_per_cell,
+        ribo_percent_thresh     = ribo_percent_thresh,
+        # min_peak_counts         = min_peak_counts,
+        # min_num_cell_by_counts  = min_num_cell_by_counts,
+    script:
+        work_dir+'scripts/my_params.py'
