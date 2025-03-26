@@ -1,6 +1,7 @@
 # IMPORTS
 import os
 from datetime import datetime
+import sys
 
 # DEFINE - file paths
 input_path = snakemake.input.work_dir 
@@ -13,8 +14,8 @@ params_dict = {
     'ribo_percent_thresh'   : snakemake.params.ribo_percent_thresh,
     'doublet_thresh'        : snakemake.params.doublet_thresh,
     'min_genes_per_cell'    : snakemake.params.min_genes_per_cell,
-    'min_peak_counts'       : snakemake.params.min_peak_counts,
-    'min_num_cell_by_counts': snakemake.params.min_num_cell_by_counts
+    # 'min_peak_counts'       : snakemake.params.min_peak_counts,
+    # 'min_num_cell_by_counts': snakemake.params.min_num_cell_by_counts
     
     # # TEST - for local demo purposes
     # 'mito_percent_thresh'   : 1,
@@ -50,5 +51,13 @@ print('output_path =', output_path)
 
 # Create + write to output file
 with open(output_path, 'w+') as file:
+    print(formatted_time)
+    for key, value in params_dict.items():
+        file.write(f'{key} = {value}\n')
+        
+# Send to Snakemake log file:
+with open(snakemake.log[0], "w+") as file:
+    sys.stderr = sys.stdout = file
+    print(formatted_time)
     for key, value in params_dict.items():
         file.write(f'{key} = {value}\n')
