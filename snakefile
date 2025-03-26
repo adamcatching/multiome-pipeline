@@ -1,6 +1,6 @@
 # IMPORTS
-
 import pandas
+from datetime import datetime
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -36,11 +36,24 @@ envs = {
 mito_percent_thresh = 15
 ribo_percent_thresh = 10
 doublet_thresh      = 0.15
+
+#* TODO - FIGURE OUT WHY THIS ISN'T BEING CALLED
 min_genes_per_cell  = 250
 
 # Define ATAC thresholds
 min_peak_counts         = 500
 min_num_cell_by_counts  = 10
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# TEST
+def get_datetime():
+    # Get current date and time
+    current_time = datetime.now()
+    # Format the date and time
+    formatted_time = current_time.strftime("%Y-%m-%d_%H:%M:%S")
+    # print('formatted_time =', formatted_time)
+    return formatted_time
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -54,7 +67,33 @@ rule all:
             batch = batches,
             sample = samples
             )
-            
+    log: 
+        f'logs/TEST-{get_datetime()}'
+    # # TEST
+    # shell:
+    #     """
+    #     date >> {log}
+    #     """
+    # #! ERROR - can't run script in rule all??? no can't run shell + script in the smae rule
+    # # script:
+    # #     work_dir+'scripts/my_params.py'
+
+rule my_params:
+    input:
+        work_dir = work_dir
+    log:
+        f'logs/TEST-{get_datetime()}'
+    params:
+        formatted_time          = get_datetime(),
+        mito_percent_thresh     = mito_percent_thresh,
+        doublet_thresh          = doublet_thresh,
+        min_genes_per_cell      = min_genes_per_cell,
+        ribo_percent_thresh     = ribo_percent_thresh
+    resources:
+        runtime=60, mem_mb=1000, disk_mb=1000, slurm_partition='quick' 
+    script:
+        work_dir+'scripts/my_params.py'
+
 """
 # NOTE - only needs to run once at the beginning
 
@@ -142,6 +181,8 @@ rule merge_filtered_rna:
             )
     output:
         merged_rna_anndata = data_dir+'control_atlas/02_filtered_anndata_rna.h5ad'
+    log: 
+        f'logs/TEST-{get_datetime()}'
     conda:
         envs['singlecell']
     params:
@@ -242,7 +283,9 @@ rule rna_atac_filter:
 
 rule rna_model:
     input:
-        merged_rna_anndata = data_dir+'control_atlas/03_filtered_anndata_rna.h5ad'
+        # merged_rna_anndata = data_dir+'control_atlas/03_filtered_anndata_rna.h5ad'
+        # TEST
+        merged_rna_anndata = work_dir+'src/output/03_filtered_anndata_rna-ef-TEST.h5ad'
     output:
         merged_rna_anndata = data_dir+'control_atlas/04_modeled_anndata_rna.h5ad',
         model_history = work_dir+'model_elbo/rna_model_history.csv'
