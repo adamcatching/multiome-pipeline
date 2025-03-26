@@ -16,7 +16,16 @@ module load snakemake/7.7.0
 snakemake \
     --cores all \
     --profile profile/snakemake_profile \
-    --use-conda -f plot_qc_rna #annotate #--unlock
+    --use-conda -f rna_model #--unlock
+    # --use-conda -f my_params #-n
+    #--unlock
+
+# # TEST
+# snakemake -s snakefile-TEST \
+#     --cores all \
+#     --profile profile/snakemake_profile \
+#     --use-conda #-n #annotate #--unlock
+#     # --use-conda -f plot_qc_rna #annotate #--unlock
 
 #! WARNING - if there is a `locked file` error, then:
 # - uncomment the --unlock flag above
