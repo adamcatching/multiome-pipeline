@@ -16,7 +16,7 @@ module load snakemake/7.7.0
 snakemake \
     --cores all \
     --profile profile/snakemake_profile \
-    --use-conda -f rna_model #--unlock
+    --use-conda -f annotate #--unlock
     # --use-conda -f my_params #-n
     #--unlock
 
