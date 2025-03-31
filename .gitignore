@@ -2,11 +2,11 @@
 #############################
 notebook
 
-# Data that should not leave the cluster
-data/*.csv
-data/*.gtf
-data/*.xlsx
-data/old_data/*
+# # Data that should not leave the cluster
+# data/*.csv
+# data/*.gtf
+# data/*.xlsx
+# data/old_data/*
 
 # Don't save the .snakemake logs
 .snakemake
@@ -52,7 +52,8 @@ input
 envs/*
 src/output
 figures
-data
+data/*
+model_elbo
 
 # EXCLUSIONS
 # Anything from the whole folders being ignored that should be included
