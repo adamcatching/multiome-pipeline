@@ -42,7 +42,7 @@ logs
 # FILES TO IGNORE
 slurm-*.out
 *.h5ad
-*model.pt
+*/model.pt
 
 # Singularity Image Files
 *.sif 
