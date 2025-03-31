@@ -42,7 +42,6 @@ logs
 # FILES TO IGNORE
 slurm-*.out
 *.h5ad
-*/model.pt
 
 # Singularity Image Files
 *.sif 
@@ -53,6 +52,7 @@ input
 envs/*
 src/output
 figures
+data/
 
 # EXCLUSIONS
 # Anything from the whole folders being ignored that should be included
