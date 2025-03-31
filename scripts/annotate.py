@@ -18,7 +18,7 @@ marker_genes = [
     ["InN", "SLC17A7"],
     ["ExN", "GAD2"],
     ["DaN", "SLC6A3"],
-    ["TC", "CD3D"]
+    # ["TC", "CD3D"]
 ]
 marker_gene_df = pd.DataFrame(marker_genes)
 marker_gene_df.columns = ['cell type', 'official gene symbol']
