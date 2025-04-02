@@ -38,6 +38,7 @@ ribo_percent_thresh = 10
 doublet_thresh      = 0.15
 
 #* TODO - FIGURE OUT WHY THIS ISN'T BEING CALLED
+#* TODO - currently i'm filtering it manually in my own JNB 0-EDA file, added a rule to try to do this here
 min_genes_per_cell  = 250
 
 # Define ATAC thresholds
@@ -82,7 +83,7 @@ rule my_params:
     input:
         work_dir = work_dir
     log:
-        f'logs/TEST-{get_datetime()}'
+        f'logs/TEST-{get_datetime()}-my_params'
     params:
         formatted_time          = get_datetime(),
         mito_percent_thresh     = mito_percent_thresh,
@@ -158,6 +159,8 @@ rule filter_rna:
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/01_{sample}_anndata_object_rna.h5ad'
     output:
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/02_{sample}_anndata_filtered_rna.h5ad'
+    # log: 
+    #     f'logs/TEST-{get_datetime()}-filter_rna.txt'
     conda:
         # envs['muon']
         envs['singlecell']
@@ -179,10 +182,11 @@ rule merge_filtered_rna:
             batch = batches,
             sample = samples
             )
+    # EF NOTE - this doesn't seem to get called ever again?
     output:
         merged_rna_anndata = data_dir+'control_atlas/02_filtered_anndata_rna.h5ad'
     log: 
-        f'logs/TEST-{get_datetime()}'
+        f'logs/TEST-{get_datetime()}-merge_filtered_rna'
     conda:
         envs['singlecell']
     params:
@@ -233,12 +237,15 @@ rule plot_qc_atac:
         work_dir+'scripts/atac_plot_qc.py'
 
 rule filter_atac:
+    # EF NOTE - this might be where the `rule merge_filtered_rna` rule's output file is passed over and it goes back to the input of that rule instead
     input:
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/02_{sample}_anndata_filtered_rna.h5ad',
         atac_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/01_{sample}_anndata_object_atac-control.h5ad'
     output:
         atac_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_object_atac-control.h5ad',
         rna_anndata = data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_filtered_rna.h5ad'
+    # log: 
+    #     f'logs/TEST-{get_datetime()}-filter_atac'
     conda:
         envs['atac']
     resources:
@@ -280,6 +287,24 @@ rule rna_atac_filter:
     script:
         'scripts/filter_rna_atac.py'
 """
+
+rule my_genes_filter:
+    input:
+        merged_rna_anndata_pre_filter = data_dir+'control_atlas/03_filtered_anndata_rna.h5ad'
+    output:
+        merged_rna_anndata = work_dir+'src/output/03_filtered_anndata_rna-ef-TEST.h5ad'
+    log:
+        f'logs/TEST-{get_datetime()}-my_genes_filter'
+    params:
+        min_genes_per_cell = min_genes_per_cell,
+    conda:
+        envs['singlecell']
+    threads:
+        64
+    resources:
+        runtime=120, mem_mb=100000, disk_mb=10000, slurm_partition='quick' 
+    script: 
+        work_dir+'scripts/my_genes_filter.py'
 
 rule rna_model:
     input:
