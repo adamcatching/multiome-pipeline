@@ -1,3 +1,4 @@
+# IMPORTS
 import numpy as np
 import scanpy as sc
 import decoupler as dc
@@ -17,8 +18,11 @@ marker_genes = [
     ["PC", "PDGFRB"],
     ["InN", "SLC17A7"],
     ["ExN", "GAD2"],
-    ["DaN", "SLC6A3"],
-    # ["TC", "CD3D"]
+    # ["DaN", "SLC6A3"],
+    # ["TC", "CD3D"],
+    # TEST
+    ['DaN', 'TH', 'SLC6A3', 'SLC10A4'],
+    ['TC', 'CD3D', 'CD3E'],    
 ]
 marker_gene_df = pd.DataFrame(marker_genes)
 marker_gene_df.columns = ['cell type', 'official gene symbol']
@@ -26,13 +30,13 @@ marker_gene_df.columns = ['cell type', 'official gene symbol']
 # Run over-represenation analysis based on cell markers
 # provided in the marker_gene_df DataFrame.
 dc.run_ora(
-    mat=adata,
-    net=marker_gene_df,
-    source='cell type',
-    target='official gene symbol',
-    min_n=1,
-    verbose=True,
-    use_raw=False
+    mat     = adata,
+    net     = marker_gene_df,
+    source  = 'cell type',
+    target  = 'official gene symbol',
+    min_n   = 1,
+    verbose = True,
+    use_raw = False
 )
 
 # Create a mini AnnData object with the over-represenation
@@ -46,9 +50,9 @@ max_e = np.nanmax(acts_v[np.isfinite(acts_v)])
 acts.X[~np.isfinite(acts.X)] = max_e
 df = dc.rank_sources_groups(
     acts, 
-    groupby='leiden_2', 
-    reference='rest', 
-    method='t-test_overestim_var'
+    groupby     = 'leiden_2', 
+    reference   = 'rest', 
+    method      = 't-test_overestim_var'
     )
 
 # Apply the best ranked cell type to a cluster-celltype dictionary
