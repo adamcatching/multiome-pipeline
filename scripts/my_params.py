@@ -1,6 +1,5 @@
 # IMPORTS
 import os
-from datetime import datetime
 import sys
 
 # DEFINE - file paths
