@@ -42,6 +42,8 @@ logs
 # FILES TO IGNORE
 slurm-*.out
 *.h5ad
+data/models/rna/model.pt
+*.ipynb
 
 # Singularity Image Files
 *.sif 
@@ -61,4 +63,4 @@ model_elbo
 !envs/single_cell_cpu.yml
 !envs/single_cell_gpu.yml
 !envs/snapATAC2.yml
-data/models/rna/model.pt
+

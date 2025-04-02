@@ -62,12 +62,18 @@ def get_datetime():
 
 rule all:
     input:
-        rna_anndata = expand(
-            data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/01_{sample}_anndata_object_rna.h5ad', 
+        rna_anndata=expand(
+            data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/03_{sample}_anndata_filtered_rna.h5ad', 
             zip,
-            batch = batches,
-            sample = samples
+            batch=batches,
+            sample=samples
             )
+        # rna_anndata = expand(
+        #     data_dir+'batch{batch}/Multiome/{sample}-ARC/outs/01_{sample}_anndata_object_rna.h5ad', 
+        #     zip,
+        #     batch = batches,
+        #     sample = samples
+        #     )
     log: 
         f'logs/TEST-{get_datetime()}'
     # # TEST

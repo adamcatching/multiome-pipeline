@@ -16,7 +16,8 @@ module load snakemake/7.7.0
 snakemake \
     --cores all \
     --profile profile/snakemake_profile \
-    --use-conda -f my_genes_filter
+    --use-conda
+    #-f my_genes_filter
     #--use-conda -f my_params #-n
     #--unlock
 
