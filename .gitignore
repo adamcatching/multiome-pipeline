@@ -29,17 +29,20 @@ input/*.csv
 # No need to show my mistakes (logs) to the world
 logs
 
-# OS generated files #
-######################
+############################################
+# OS generated files 
+############################################
+
 .DS_Store
-.DS_Store?
+.DS_Store*
 ._*
 .Spotlight-V100
 .Trashes
 
-######################
+############################################
+# FILES TO IGNORE    
+############################################
 
-# FILES TO IGNORE
 slurm-*.out
 *.h5ad
 data/models/rna/model.pt
@@ -48,8 +51,11 @@ data/models/rna/model.pt
 # Singularity Image Files
 *.sif 
 
+############################################
 # WHOLE FOLDERS TO IGNORE
 # * = ignore all files here (keeps an empty folder instead, which will skip the exclusions)
+############################################
+
 input
 envs/*
 src/output
@@ -57,10 +63,12 @@ figures
 data/*
 model_elbo
 
+############################################
 # EXCLUSIONS
 # Anything from the whole folders being ignored that should be included
+############################################
+
 !envs/cellbender.yml
 !envs/single_cell_cpu.yml
 !envs/single_cell_gpu.yml
 !envs/snapATAC2.yml
-
